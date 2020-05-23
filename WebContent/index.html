@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="./imgs/icon.png" type="image/png">
+<link rel="stylesheet" type="text/css" href="./semantic/semantic.min.css">
+<link rel="stylesheet" type="text/css" href="./semantic-alert/Semantic-UI-Alert.css">
+<link rel="stylesheet" type="text/css" href="./styles.css">
+<script
+  src="https://code.jquery.com/jquery-3.1.1.min.js"
+  integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+  crossorigin="anonymous"></script>
+<script src="semantic/semantic.min.js"></script>
+<script type="text/javascript" src="./semantic-alert/Semantic-UI-Alert.js"></script>
+<title>CRUD Produtos</title>
+</head>
+<body>
+
+	<div class="main">
+		<div class="ui container center aligned" style="margin: 12px">
+		
+			<!-- <a href="lista.html">Lista</a>
+			<a href="cadprodutos">Formulário</a> -->
+			
+			<h1 class="ui center aligned huge header">
+			  Cadastro de Produtos
+			</h1>
+			
+			<div class="big ui buttons">
+			  <button class="ui inverted button" onclick="novo()">Cadastrar</button>
+			  <div class="or" data-text="ou"></div>
+			  <button class="ui inverted button" onclick="listar()">Listar</button>
+			</div>
+					
+		</div>
+		<div class="ui two column grid container"  style="margin: 25px">
+		  <div class="ten wide column">
+		    <div id="formulario" style="display:none">
+		    	<form class="ui form" onsubmit="return false">
+				  <div class="field">
+				    <label>Descrição</label>
+				    <input type="text" name="descricao" id="descricao" placeholder="Descrição">
+				  </div>
+				  <div class="field">
+				    <label>Marca</label>
+				    <input type="text" name="marca" id="marca" placeholder="Marca">
+				  </div>
+				  <div class="field">
+				    <label>Preço de Custo</label>
+				    <input type="number" name="precoCusto" id="precoCusto" placeholder="Preço de Custo">
+				  </div>
+				  <div class="field">
+				    <label>Preço de Venda</label>
+				    <input type="number" name="precoVenda" id="precoVenda" placeholder="Preço de Venda">
+				  </div>
+				  <div class="field">
+				    <label>Saldo</label>
+				    <input type="text" name="saldo" id="saldo" placeholder="Saldo">
+				  </div>
+				  <br>
+				  <div id="btnsalvar">
+				  	<button class="ui button fluid" onclick="salvar()">Cadastrar</button>
+				  </div>
+				</form>
+		    </div>
+		    <div id="lista" style="display: none;max-height: 80%;overflow-y: scroll;"></div>
+		  </div>
+		  
+		  <div class="six wide column center aligned">
+		    <div id="icone"></div>
+		  </div>
+		</div>
+		
+	</div>
+	
+	<div>
+       <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+           <defs>
+               <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+           </defs>
+           <g class="parallax">
+               <use xlink:href="#gentle-wave" x="48" y="0" fill="rgba(255,255,255,0.7" />
+               <use xlink:href="#gentle-wave" x="48" y="3" fill="rgba(255,255,255,0.5)" />
+               <use xlink:href="#gentle-wave" x="48" y="5" fill="rgba(255,255,255,0.3)" />
+               <use xlink:href="#gentle-wave" x="48" y="7" fill="#fff" />
+           </g>
+       </svg>
+   </div>
+   
+   <script type="text/javascript">
+   		
+   		function limpaCampos() {
+			document.getElementById("descricao").value = "";
+			document.getElementById("marca").value = "";
+			document.getElementById("precoCusto").value = "";
+			document.getElementById("precoVenda").value = "";
+			document.getElementById("saldo").value = "";
+		}
+   
+   		function novo() {
+   			limpaCampos()
+   			document.getElementById("formulario").style.display = "block"
+   			document.getElementById("lista").style.display = "none"
+ 			document.getElementById("icone").innerHTML = "<img class='ui fluid image' src='imgs/novo.png' />"
+   		}
+   		
+   		function listar() {
+   			limpaCampos()
+   			document.getElementById("formulario").style.display = "none"
+ 	   		document.getElementById("lista").style.display = "block"
+ 	   		document.getElementById("lista").innerHTML = "<div class='ui loading inverted very padded segment'><p></p><p></p></div>"
+ 	   		document.getElementById("icone").innerHTML = "<img class='ui fluid image' src='imgs/lista.png' />"
+ 	   		
+			var oReq = new XMLHttpRequest();
+			oReq.onload = function(e) {
+			  	var dados = oReq.response;
+				  
+				var tab = "<div>"
+				tab += "<table class='ui selectable inverted table stackable' id='produtos'>";
+				tab += "<thead><tr>";
+				tab += "<th>id</th>";
+				tab += "<th>Produto</th>";
+				tab += "<th>Marca</th>";
+				tab += "<th class='right aligned'>Preço de Custo</th>";
+				tab += "<th class='right aligned'>Preço de Venda</th>";
+				tab += "<th class='right aligned'>Saldo</th>";
+				tab += "</tr></thead>";
+				tab += "<tbody>";
+				
+					
+				for (var i in dados) {
+					console.log(i);
+					console.log(dados[i]);
+					tab += "<tr>";
+					tab += "<td>" + dados[i].idproduto + "</td>";
+					tab += "<td>" + dados[i].descricao + "</td>";
+					tab += "<td>" + dados[i].marca + "</td>";
+					tab += "<td class='right aligned'>" + dados[i].precoCusto + "</td>";
+					tab += "<td class='right aligned'>" + dados[i].precoVenda + "</td>";
+					tab += "<td class='right aligned'>" + dados[i].saldo + "</td>";
+					tab += "</tr>";
+				}
+				tab += "</tbody>";
+				tab += "</table>";
+				tab += "</div>"
+				document.getElementById("lista").innerHTML = tab;
+					
+			}
+			oReq.open("POST", "Controller?m=ListarProduto");
+			oReq.responseType = "json";
+			oReq.send();
+   		}
+   		
+   		function validaCampos() {
+   			var continua = true
+   			
+   			if (document.getElementById("descricao").value.trim() === "") {
+   				$.uiAlert({
+   					textHead: 'Campo Descrição é obrigatório', 
+   					text: 'Preencha o campo Descrição para continuar com o cadastro!', 
+   					bgcolor: '#F2711C',
+   					textcolor: '#fff',
+   					position: 'top-center',
+   					icon: 'warning sign', 
+   					time: 3, 
+   				})
+   				continua = false
+			}
+   			
+   			if (document.getElementById("precoCusto").value.trim() === "") {
+   				$.uiAlert({
+   					textHead: 'Campo Preço de Custo é obrigatório', 
+   					text: 'Preencha o campo Preço de Custo para continuar com o cadastro!', 
+   					bgcolor: '#F2711C',
+   					textcolor: '#fff',
+   					position: 'top-center',
+   					icon: 'warning sign', 
+   					time: 3, 
+   				})
+   				continua = false
+			}
+   			
+   			if (isNaN(document.getElementById("precoCusto").value)) {
+   				$.uiAlert({
+   					textHead: 'Campo Preço de Custo com valor inválido', 
+   					text: 'O campo Preço de Custo deve ser numérico!', 
+   					bgcolor: '#F2711C',
+   					textcolor: '#fff',
+   					position: 'top-center',
+   					icon: 'warning sign', 
+   					time: 3, 
+   				})
+   				continua = false
+			}
+   			
+   			if (document.getElementById("precoVenda").value.trim() === "") {
+   				$.uiAlert({
+   					textHead: 'Campo Preço de Venda é obrigatório', 
+   					text: 'Preencha o campo Preço de Venda para continuar com o cadastro!', 
+   					bgcolor: '#F2711C',
+   					textcolor: '#fff',
+   					position: 'top-center',
+   					icon: 'warning sign', 
+   					time: 3, 
+   				})
+   				continua = false
+			}
+   			
+   			if (isNaN(document.getElementById("precoVenda").value)) {
+   				$.uiAlert({
+   					textHead: 'Campo Preço de Venda com valor inválido', 
+   					text: 'O campo Preço de Venda deve ser numérico!', 
+   					bgcolor: '#F2711C',
+   					textcolor: '#fff',
+   					position: 'top-center',
+   					icon: 'warning sign', 
+   					time: 3, 
+   				})
+   				continua = false
+			}
+   			
+   			return continua
+   		}
+   		
+   		function salvar() {
+
+   			if (validaCampos()) {
+   				document.getElementById("btnsalvar").innerHTML = "<button class='ui loading button fluid'>Loading</button>"
+   		   			
+   		   			var req = new XMLHttpRequest();
+   					req.onload = function(e) {
+   					  	var dados = req.response;
+   						  // alert(dados);
+   						document.getElementById("btnsalvar").innerHTML = "<button class='ui button fluid' onclick='salvar()'>Cadastrar</button>";
+   						if (dados.includes('sucesso')) {
+   							$.uiAlert({
+   								  textHead: 'Produto cadastrado com sucesso!', 
+   								  text: 'Para ver o produto cadastrado clique em listar', 
+   								  bgcolor: '#19c3aa', 
+   								  textcolor: '#fff', 
+   								  position: 'top-center',
+   								  icon: 'checkmark box', 
+   								  time: 3, 
+   							})
+   							limpaCampos()
+   						} else {
+   							$.uiAlert({
+   								textHead: req.response, 
+   								text: 'Não foi possível realizar o cadastro do produto', 
+   								bgcolor: '#DB2828', 
+   								textcolor: '#fff', 
+   								position: 'top-center',
+   								icon: 'remove circle', 
+   								time: 3, 
+  							})
+   						}
+   					  
+   					}
+   					
+   					req.open("POST", "Controller?m=InsereProduto", true);
+   					req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+   					req.send("idproduto=0"+
+   							"&descricao="+document.getElementById("descricao").value+
+   							"&marca="+document.getElementById("marca").value+
+   							"&precoCusto="+document.getElementById("precoCusto").value+
+   							"&precoVenda="+document.getElementById("precoVenda").value+
+   							"&saldo="+document.getElementById("saldo").value);
+			}
+			
+   		}
+   		
+   		novo()
+   		
+   </script>
+	
+</body>
+</html>
